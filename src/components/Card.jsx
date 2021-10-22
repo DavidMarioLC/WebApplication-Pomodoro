@@ -59,8 +59,8 @@ const Progress = styled(CircularProgressbar)`
 `;
 
 const Card = () => {
-  const MINUTES_POMODORO = 1;
-  const MINUTES_BREAK = 1;
+  const MINUTES_POMODORO = 25;
+  const MINUTES_BREAK = 5;
 
   const TIME_IN_SECONDS_POMODORO = MINUTES_POMODORO * 60;
   const TIME_IN_SECONDS_BREAK = MINUTES_BREAK * 60;
@@ -71,6 +71,7 @@ const Card = () => {
   const [isStart, setStart] = useState(false);
   const [isPaused, setPaused] = useState(true);
   const [isBreak, setBreak] = useState(false);
+
   const [reanudar, setReanudar] = useState(false);
   const timerRef = useRef(0);
 
@@ -78,13 +79,19 @@ const Card = () => {
     if (currentTime === time) {
       window.clearInterval(timerRef.current);
       setcurrentTime(0);
-      setStart((isStart) => !isStart);
-      setPaused((isPaused) => !isPaused);
-      setBreak((isBreak) => !isBreak);
-      setTime(() => TIME_IN_SECONDS_BREAK);
+      setStart(!isStart);
+      setPaused(!isPaused);
       setReanudar(false);
+      setBreak(!isBreak);
+
+      const newIsBreak = !isBreak;
+      setTime(newIsBreak ? TIME_IN_SECONDS_BREAK : TIME_IN_SECONDS_POMODORO);
     }
-  }, [currentTime, time]);
+  });
+
+  // useEffect(() => {
+  //   setTime(isBreak ? TIME_IN_SECONDS_BREAK : TIME_IN_SECONDS_POMODORO);
+  // }, [isBreak]);
 
   const initTimer = () => {
     timerRef.current = setInterval(() => {
@@ -115,9 +122,9 @@ const Card = () => {
 
     const minutesWithZero = minutesString.padStart(2, "0");
     const secondsWithZero = secondsString.padStart(2, "0");
-    const result = `${minutesWithZero}:${secondsWithZero}`;
+    const minutesAndSeconds = `${minutesWithZero}:${secondsWithZero}`;
 
-    return result;
+    return minutesAndSeconds;
   };
 
   return (
